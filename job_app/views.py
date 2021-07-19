@@ -4,7 +4,7 @@ from django.views.generic import ListView, DetailView
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from job_app.models import Company, Specialty, Vacancy
-
+from job_app.data import cards_on_page
 
 def error404_view(request: HttpRequest, exception=None):
     return HttpResponseNotFound("""<h1>Error 404</h1><p>Page Not Found</p><a href="/">На главную</a>""")
@@ -31,14 +31,14 @@ class MainView(TemplateView):
 
 
 class VacanciesView(ListView):
-    paginate_by = 10
+    paginate_by = cards_on_page
     model = Vacancy
     template_name = 'job_app/vacancies.html'
     queryset = model.objects.order_by('-published_at')
 
 
 class SpecializedVacanciesView(ListView):
-    paginate_by = 10
+    paginate_by = cards_on_page
     model = Vacancy
     template_name = 'job_app/vacancies.html'
 
@@ -61,7 +61,7 @@ class VacancyView(DetailView):
 
 
 class CompanyView(ListView):
-    paginate_by = 10
+    paginate_by = cards_on_page
     model = Vacancy
     template_name = 'job_app/company.html'
 
