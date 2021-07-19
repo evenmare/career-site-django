@@ -1,0 +1,29 @@
+{% extends 'job_app/base.html' %}
+{% load ru_pluralize %}
+{% block container %}
+  <main class="container mt-3">
+    <div class="navbar mt-5">
+      <p><a href="{% url 'home' %}">Назад</a></p>
+    </div>
+    <section>
+      <div class="text-center">
+        <img src="company_logo" width="130" height="80" alt="">
+      </div>
+      <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;"><strong>{{ company_name }}</strong></h1>
+      {% if object_list|length != 0 %}
+          <p class="text-center pt-1">Компания, {{ company_location }}, {{ page_obj.paginator.count|ru_pluralize:"вакансия,вакансии,вакансий" }}</p>
+          <div class="row mt-5">
+            <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+              {% for vacancy in page_obj %}
+                {% include 'job_app/card.html' %}
+              {% endfor %}
+            </div>
+          </div>
+            {% include 'job_app/pagination.html' %}
+        {% else %}
+            <h2 class="h2 font-weight-normal text-center mb-4" style="padding-top: 40px; font-size: 24px;">Вакансии обязательно будут, надо только подождать!</h2>
+            <p class="text-center"><a href="{% url 'home' %}">{{ home }}</a></p>
+        {% endif %}
+    </section>
+  </main>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'job_app/base.html' %}
+{% block container %}
+  <main class="container mt-3">
+    <section>
+      <h1 class="h1 text-center mx-auto mt-4 pt-5" style="font-size: 70px;"><strong>Вакансии {{ title }}</strong></h1>
+        {% if object_list|length != 0 %}
+            <p class="text-center pt-1">Всего: {{ page_obj.paginator.count }}</p>
+        {% else %}
+            <h2 class="h2 font-weight-normal text-center mb-4" style="padding-top: 40px; font-size: 24px;">Вакансии обязательно будут, надо только подождать!</h2>
+            <p class="text-center"><a href="{% url 'home' %}">{{ home }}</a></p>
+        {% endif %}
+      <div class="row mt-5">
+          <div class="col-12 col-lg-8 offset-lg-2 m-auto">
+        {% for vacancy in page_obj %}
+            {% include 'job_app/card.html' %}
+        {% endfor %}
+        </div>
+      </div>
+    </section>
+      {% include 'job_app/pagination.html' %}
+  </main>
+{% endblock %}
