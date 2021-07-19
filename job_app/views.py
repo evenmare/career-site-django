@@ -6,6 +6,7 @@ from django.shortcuts import get_object_or_404
 from job_app.models import Company, Specialty, Vacancy
 from job_app.data import cards_on_page
 
+
 def error404_view(request: HttpRequest, exception=None):
     return HttpResponseNotFound("""<h1>Error 404</h1><p>Page Not Found</p><a href="/">На главную</a>""")
 
