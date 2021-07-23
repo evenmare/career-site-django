@@ -1,0 +1,60 @@
+{% extends 'job_app/base.html' %}
+{% block container %}
+{% load crispy_forms_tags %}
+  <main class="container mt-3 pb-5">
+    <div class="row mt-5">
+    {% include 'job_app/company_left_menu.html' %}
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-body px-4 pb-4">
+            <section class="tab-pane fade show active">
+              <h2 class="h4 pt-2 pb-3">Информация о&nbsp;компании</h2>
+                {% if messages %}
+                    {% for message in messages %}
+                  <p class="alert alert-info" role="alert">
+                      {{ message }}</p>
+                    {% endfor %}
+              {% endif %}
+              <form method="post" enctype="multipart/form-data">
+                  {% csrf_token %}
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <div class="form-group pb-2">
+                      {{ form.name|as_crispy_field }}
+                    </div>
+                    <div class="form-group pb-2">
+                      {{ form.logo|as_crispy_field }}
+                    </div>
+                  </div>
+                  <div class="row align-items-center">
+                        <div class="col-12 col-md-6 align-items-center">
+                          <img src="{{ form.logo.value.url }}">
+                        </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 col-md-6">
+                    <div class="form-group pb-2">
+                      {{ form.employee_count|as_crispy_field }}
+                    </div>
+                  </div>
+                  <div class="col-12 col-md-6">
+                    <div class="form-group pb-2">
+                      {{ form.location|as_crispy_field }}
+                    </div>
+                  </div>
+                </div>
+                <div class="form-group pb-2">
+                  {{ form.description|as_crispy_field }}
+                </div>
+                <div class="form-group">
+                  <input type="submit" class="btn btn-info" value="Сохранить">
+                </div>
+              </form>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock %}

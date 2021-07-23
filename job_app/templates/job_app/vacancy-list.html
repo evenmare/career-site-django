@@ -1,0 +1,39 @@
+{% extends 'job_app/base.html' %}
+{% load ru_pluralize %}
+{% block container %}
+  <main class="container mt-3 pb-5">
+    <div class="row mt-5">
+      {% include 'job_app/company_left_menu.html' %}
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-body px-4 pb-4">
+            <section class="tab-pane fade show active">
+              <h2 class="h4 pt-2 pb-3">Вакансии</h2>
+              {% for vacancy in page_obj %}
+                  <div class="card mt-3">
+                    <div class="card-body px-4">
+                      <div class="row align-items-center">
+                        <div class="col-6 col-lg-8">
+                          <a href="{% url 'vacancy' vacancy.id %}" class="mb-1">{{ vacancy.title }}</a>
+                          <p class="mb-1">
+                            <span class="mr-4">{{ vacancy.salary_min }} - {{ vacancy.salary_max }} Р</span>
+                              <a href="{% url 'company_vacancy_edit' vacancy.id %}#applications" class="text-info">
+                                  {{ vacancy.applications.count|ru_pluralize:"отклик, отклика, откликов" }}</a>
+                          </p>
+                        </div>
+                        <div class="col-6 col-lg-4 text-right">
+                          <a href="{% url 'company_vacancy_edit' vacancy.id %}" class="btn btn-outline-info">Изменить</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              {% endfor %}
+              <a href="{% url 'company_vacancy_create' %}" class="btn btn-info mt-4">Добавить</a>
+            </section>
+          {% include 'job_app/pagination.html' %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+{% endblock %}

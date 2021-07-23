@@ -3,11 +3,13 @@
 {% block container %}
   <main class="container mt-3">
     <div class="navbar mt-5">
-      <p><a href="{% url 'home' %}">Назад</a></p>
+        {% if request.META.HTTP_REFERER %}
+          <p><a href="{{ request.META.HTTP_REFERER }}">{{ back }}</a></p>
+        {% endif %}
     </div>
     <section>
       <div class="text-center">
-        <img src="company_logo" width="130" height="80" alt="">
+        <img src="{{ company_logo.url }}" width="130" height="80" alt="">
       </div>
       <h1 class="h1 text-center mx-auto mt-0 pt-1" style="font-size: 70px;"><strong>{{ company_name }}</strong></h1>
       {% if object_list|length != 0 %}

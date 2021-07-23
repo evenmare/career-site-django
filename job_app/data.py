@@ -3,7 +3,6 @@ subtitle = 'Вакансии'
 back = 'Назад'
 next_step = 'Далее'
 home = 'На главную'
-cards_on_page = 10
 
 """ Вакансии """
 
