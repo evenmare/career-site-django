@@ -1,5 +1,5 @@
 from django.contrib.messages.views import SuccessMessageMixin
-from django.http import HttpRequest, HttpResponseNotFound, HttpResponseServerError
+from django.http import HttpRequest, HttpResponseNotFound, HttpResponseServerError, Http404
 from django.views.generic.base import TemplateView, View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Count
@@ -67,6 +67,14 @@ class CompanyVacancyEdit(SuccessMessageMixin, UpdateView):
             company_vacancy.save()
             return super().form_valid(form)
 
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Vacancy.objects.filter(company=Company.objects.filter(owner=self.request.user))
+        except (Company.DoesNotExist, Vacancy.DoesNotExist, TypeError):
+            raise Http404
+
+        return super().dispatch(request, *args, **kwargs)
+
 
 class CompanyVacancyCreate(SuccessMessageMixin, CreateView):
     success_message = 'Вакансия создана'
@@ -84,6 +92,12 @@ class CompanyVacancyCreate(SuccessMessageMixin, CreateView):
         else:
             company_vacancy.save()
             return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect('/login')
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CompanyVacancies(ListView):
@@ -119,6 +133,8 @@ class CompanyCreate(SuccessMessageMixin, CreateView):
             return redirect('/mycompany/')
         except Company.DoesNotExist:
             pass
+        except TypeError:
+            return redirect('/login')
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -138,6 +154,8 @@ class CompanyEdit(SuccessMessageMixin, UpdateView):
             Company.objects.get(owner=self.request.user)
         except Company.DoesNotExist:
             return redirect('/mycompany/letsstart')
+        except TypeError:
+            return redirect('/login')
 
         return super().dispatch(request, *args, **kwargs)
 

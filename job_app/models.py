@@ -13,7 +13,7 @@ class Company(models.Model):
     owner = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'{ self.id } { self.name }'
+        return f'{self.id} {self.name}'
 
 
 class Specialty(models.Model):
@@ -22,7 +22,7 @@ class Specialty(models.Model):
     picture = models.ImageField(upload_to=MEDIA_SPECIALITY_IMAGE_DIR)
 
     def __str__(self):
-        return f'{ self.title }'
+        return f'{self.title}'
 
 
 class Vacancy(models.Model):
@@ -36,7 +36,7 @@ class Vacancy(models.Model):
     published_at = models.DateField(auto_now_add=True)
 
     def __str__(self):
-        return f'{ self.id } { self.title } { self.company } { self.specialty }'
+        return f'{self.id} {self.title} {self.company} {self.specialty}'
 
 
 class Application(models.Model):
@@ -50,19 +50,27 @@ class Application(models.Model):
         return f'{self.id} {self.written_username}'
 
 
-# class Resume(models.Model):
-#
-#     class StatusChoices(models.TextChoices):
-#         INACTIVE = 'Не ищу работу'
-#
-#
-#     user = models.OneToOneField(get_user_model())
-#     name =
-#     surname =
-#     status =
-#     salary =
-#     specialty =
-#     grade =
-#     education =
-#     experience =
-#     portfolio =
+class Resume(models.Model):
+
+    class StatusChoices(models.TextChoices):
+        INACTIVE = 'Не ищу работу'
+        SEMI_ACTIVE = 'Рассматриваю предложения'
+        ACTIVE = 'Ищу работу'
+
+    class GradeChoices(models.TextChoices):
+        INTERN = 'Стажер'
+        JUNIOR = 'Junior'
+        MIDDLE = 'Middle'
+        SENIOR = 'Senior'
+        LEAD = 'Lead'
+
+    user = models.OneToOneField(get_user_model(), on_delete=models.CASCADE)
+    name = models.CharField(max_length=32)
+    surname = models.CharField(max_length=32)
+    status = models.CharField(max_length=32, choices=StatusChoices.choices)
+    salary = models.IntegerField()
+    specialty = models.ForeignKey(Specialty, on_delete=models.CASCADE, related_name='resume')
+    grade = models.CharField(max_length=32, choices=GradeChoices.choices)
+    education = models.TextField()
+    experience = models.TextField()
+    portfolio = models.URLField(null=True)
