@@ -53,12 +53,12 @@ class Application(models.Model):
 class Resume(models.Model):
 
     class StatusChoices(models.TextChoices):
-        INACTIVE = 'Не ищу работу'
-        SEMI_ACTIVE = 'Рассматриваю предложения'
-        ACTIVE = 'Ищу работу'
+        INACTIVE = ('inactive', 'Не ищу работу')
+        SEMI_ACTIVE = ('semiactive', 'Рассматриваю предложения')
+        ACTIVE = ('active', 'Ищу работу')
 
     class GradeChoices(models.TextChoices):
-        INTERN = 'Стажер'
+        INTERN = ('intern', 'Стажер')
         JUNIOR = 'Junior'
         MIDDLE = 'Middle'
         SENIOR = 'Senior'
@@ -73,4 +73,7 @@ class Resume(models.Model):
     grade = models.CharField(max_length=32, choices=GradeChoices.choices)
     education = models.TextField()
     experience = models.TextField()
-    portfolio = models.URLField(null=True)
+    portfolio = models.URLField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.user} {self.status} {self.specialty}'
