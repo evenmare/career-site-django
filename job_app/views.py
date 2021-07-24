@@ -137,12 +137,6 @@ class CompanyVacancyCreateView(SuccessMessageMixin, CreateView):
             company_vacancy.save()
             return super().form_valid(form)
 
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return redirect('/login')
-
-        return super().dispatch(request, *args, **kwargs)
-
 
 class CompanyVacanciesView(ListView):
     paginate_by = CARDS_ON_PAGE
