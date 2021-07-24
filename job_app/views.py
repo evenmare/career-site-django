@@ -18,6 +18,19 @@ def error500_view(request: HttpRequest, exception=None):
     return HttpResponseServerError("""<h1>Error 500</h1><a href="/">На главную</a><p>That's a crap</p>""")
 
 
+class ResumeLetsStartView(TemplateView):
+    template_name = 'job_app/resume-create.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Resume.objects.get(user=self.request.user)
+            return redirect('/myresume/')
+        except Resume.DoesNotExist:
+            pass
+
+        return super().dispatch(request, *args, **kwargs)
+
+
 class ResumeEditView(SuccessMessageMixin, UpdateView):
     success_message = 'Резюме обновлено!'
     template_name = 'job_app/resume-edit.html'
@@ -32,7 +45,7 @@ class ResumeEditView(SuccessMessageMixin, UpdateView):
         try:
             Resume.objects.get(user=self.request.user)
         except Resume.DoesNotExist:
-            return redirect('/myresume/create')
+            return redirect('/myresume/letsstart')
 
         return super().dispatch(request, *args, **kwargs)
 
