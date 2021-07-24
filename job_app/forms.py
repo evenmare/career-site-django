@@ -1,7 +1,49 @@
 from django import forms
-from .models import Company, Vacancy, Specialty, Application
+from .models import Company, Vacancy, Specialty, Application, Resume
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Row, Column, Submit
+
+
+class ResumeForm(forms.ModelForm):
+
+    class Meta:
+        model = Resume
+        fields = ('name', 'surname', 'status', 'salary',
+                  'specialty', 'grade', 'education', 'experience', 'portfolio')
+        labels = {
+            'name': 'Имя',
+            'surname': 'Фамилия',
+            'status': 'Готовность к работе',
+            'salary': 'Ожидаемое вознаграждение',
+            'specialty': 'Специализация',
+            'grade': 'Квалификация',
+            'education': 'Образование',
+            'experience': 'Опыт работы',
+            'portfolio': 'Ссылка на портфолио',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(ResumeForm, self).__init__(*args, **kwargs)
+        self.helper = FormHelper
+        self.helper.form_method = 'post'
+        self.helper.layout = Layout(
+            Row(
+                Column('name'),
+                Column('surname'),
+            ),
+            Row(
+                Column('status'),
+                Column('salary'),
+            ),
+            Row(
+                Column('specialty'),
+                Column('grade'),
+            ),
+            'education',
+            'experience',
+            'portfolio',
+            Submit('submit', 'Отправить')
+        )
 
 
 class ApplicationForm(forms.ModelForm):
@@ -27,13 +69,12 @@ class ApplicationForm(forms.ModelForm):
         self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.form_class = 'card mt-3 mb-3 card-body mx-3'
-        self.helper.add_input(Submit('submit', 'Отправить'))
-        # self.helper.layout = Layout(
-        #     'written_username',
-        #     'written_phone',
-        #     'written_cover_letter',
-        #     Submit('submit', 'Отправить'),
-        # )
+        self.helper.layout = Layout(
+            'written_username',
+            'written_phone',
+            'written_cover_letter',
+            Submit('submit', 'Отправить'),
+        )
 
 
 class CompanyVacancyForm(forms.ModelForm):
