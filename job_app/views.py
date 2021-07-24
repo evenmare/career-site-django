@@ -1,12 +1,13 @@
 from django.contrib.messages.views import SuccessMessageMixin
+from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponseNotFound, HttpResponseServerError, Http404
 from django.views.generic.base import TemplateView, View
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, render, redirect
-from job_app.models import Company, Specialty, Vacancy, Application
+from job_app.models import Company, Specialty, Vacancy, Application, Resume
 from jobs_project.settings import CARDS_ON_PAGE
-from .forms import CompanyInfoForm, CompanyVacancyForm, ApplicationForm
+from .forms import CompanyInfoForm, CompanyVacancyForm, ApplicationForm, ResumeForm
 
 
 def error404_view(request: HttpRequest, exception=None):
@@ -15,6 +16,49 @@ def error404_view(request: HttpRequest, exception=None):
 
 def error500_view(request: HttpRequest, exception=None):
     return HttpResponseServerError("""<h1>Error 500</h1><a href="/">На главную</a><p>That's a crap</p>""")
+
+
+class ResumeEditView(SuccessMessageMixin, UpdateView):
+    success_message = 'Резюме обновлено!'
+    template_name = 'job_app/resume-edit.html'
+    model = Resume
+    form_class = ResumeForm
+    success_url = '/myresume'
+
+    def get_object(self, queryset=None):
+        return Resume.objects.get(user=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Resume.objects.get(user=self.request.user)
+        except Resume.DoesNotExist:
+            return redirect('/myresume/create')
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ResumeCreateView(SuccessMessageMixin, CreateView):
+    success_message = 'Резюме создано!'
+    template_name = 'job_app/resume-edit.html'
+    model = Resume
+    form_class = ResumeForm
+    success_url = '/myresume'
+
+    def form_valid(self, form):
+        input_resume = form.save(commit=False)
+        input_resume.user = self.request.user
+        input_resume.save()
+
+        return super().form_valid(form)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Resume.objects.get(user=self.request.user)
+            return redirect('/myresume')
+        except Resume.DoesNotExist:
+            pass
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class VacancyView(SuccessMessageMixin, CreateView):
@@ -42,7 +86,7 @@ class VacancyView(SuccessMessageMixin, CreateView):
         return super().form_valid(form)
 
 
-class CompanyVacancyEdit(SuccessMessageMixin, UpdateView):
+class CompanyVacancyEditView(SuccessMessageMixin, UpdateView):
     success_message = 'Вакансия обновлена'
     model = Vacancy
     form_class = CompanyVacancyForm
@@ -52,7 +96,7 @@ class CompanyVacancyEdit(SuccessMessageMixin, UpdateView):
         return self.request.path
 
     def get_context_data(self, **kwargs):
-        context = super(CompanyVacancyEdit, self).get_context_data(**kwargs)
+        context = super(CompanyVacancyEditView, self).get_context_data(**kwargs)
         context['applications'] = Application.objects.filter(
             vacancy=Vacancy.objects.get(id=self.kwargs['pk']))
 
@@ -70,13 +114,13 @@ class CompanyVacancyEdit(SuccessMessageMixin, UpdateView):
     def dispatch(self, request, *args, **kwargs):
         try:
             Vacancy.objects.filter(company=Company.objects.filter(owner=self.request.user))
-        except (Company.DoesNotExist, Vacancy.DoesNotExist, TypeError):
+        except (Company.DoesNotExist, Vacancy.DoesNotExist):
             raise Http404
 
         return super().dispatch(request, *args, **kwargs)
 
 
-class CompanyVacancyCreate(SuccessMessageMixin, CreateView):
+class CompanyVacancyCreateView(SuccessMessageMixin, CreateView):
     success_message = 'Вакансия создана'
     model = Vacancy
     form_class = CompanyVacancyForm
@@ -100,7 +144,7 @@ class CompanyVacancyCreate(SuccessMessageMixin, CreateView):
         return super().dispatch(request, *args, **kwargs)
 
 
-class CompanyVacancies(ListView):
+class CompanyVacanciesView(ListView):
     paginate_by = CARDS_ON_PAGE
     model = Vacancy
     template_name = 'job_app/vacancy-list.html'
@@ -113,7 +157,7 @@ class CompanyVacancies(ListView):
         return company_vacancies
 
 
-class CompanyCreate(SuccessMessageMixin, CreateView):
+class CompanyCreateView(SuccessMessageMixin, CreateView):
     success_message = 'Компания создана!'
     model = Company
     form_class = CompanyInfoForm
@@ -133,13 +177,11 @@ class CompanyCreate(SuccessMessageMixin, CreateView):
             return redirect('/mycompany/')
         except Company.DoesNotExist:
             pass
-        except TypeError:
-            return redirect('/login')
 
         return super().dispatch(request, *args, **kwargs)
 
 
-class CompanyEdit(SuccessMessageMixin, UpdateView):
+class CompanyEditView(SuccessMessageMixin, UpdateView):
     success_message = 'Информация о компании обновлена'
     model = Company
     form_class = CompanyInfoForm
@@ -154,13 +196,11 @@ class CompanyEdit(SuccessMessageMixin, UpdateView):
             Company.objects.get(owner=self.request.user)
         except Company.DoesNotExist:
             return redirect('/mycompany/letsstart')
-        except TypeError:
-            return redirect('/login')
 
         return super().dispatch(request, *args, **kwargs)
 
 
-class CompanyLetsStart(TemplateView):
+class CompanyLetsStartView(TemplateView):
     template_name = 'job_app/company-create.html'
 
     def dispatch(self, request, *args, **kwargs):
