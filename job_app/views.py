@@ -274,7 +274,7 @@ class CompanyView(ListView):
     def get_queryset(self):
         company = get_object_or_404(
             Company.objects.filter(id=self.kwargs['company_id']))
-        return Vacancy.objects.filter(company=company)
+        return Vacancy.objects.filter(company=company).order_by('-published_at')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         company = Company.objects.get(id=self.kwargs['company_id'])
