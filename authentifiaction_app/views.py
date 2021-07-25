@@ -6,7 +6,7 @@ from authentifiaction_app.forms import RegisterForm, LoginForm
 
 class SignupView(CreateView):
     form_class = RegisterForm
-    success_url = '/'
+    success_url = '/login'
     template_name = 'authentifiaction_app/register.html'
 
 
