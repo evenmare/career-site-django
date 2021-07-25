@@ -8,7 +8,10 @@
         <div class="card">
           <div class="card-body px-4 pb-4">
             <section class="tab-pane fade show active">
-              <h2 class="h4 pt-2 pb-3">Вакансии</h2>
+              <h2 class="h4 pt-2 pb-2">Вакансии</h2>
+                {% if not page_obj %}
+                    <p class="mt-2">У вас еще нет открытых вакансий. Добавьте первую!</p>
+                {% endif %}
               {% for vacancy in page_obj %}
                   <div class="card mt-3">
                     <div class="card-body px-4">
@@ -17,18 +20,21 @@
                           <a href="{% url 'vacancy' vacancy.id %}" class="mb-1">{{ vacancy.title }}</a>
                           <p class="mb-1">
                             <span class="mr-4">{{ vacancy.salary_min }} - {{ vacancy.salary_max }} Р</span>
+                              {% if vacancy.applications.count != 0 %}
                               <a href="{% url 'company_vacancy_edit' vacancy.id %}#applications" class="text-info">
                                   {{ vacancy.applications.count|ru_pluralize:"отклик, отклика, откликов" }}</a>
+                              {% endif %}
                           </p>
                         </div>
                         <div class="col-6 col-lg-4 text-right">
                           <a href="{% url 'company_vacancy_edit' vacancy.id %}" class="btn btn-outline-info">Изменить</a>
+                          <a href="{% url 'company_vacancy_delete' vacancy.id %}" class="btn btn-outline-danger">Удалить</a>
                         </div>
                       </div>
                     </div>
                   </div>
               {% endfor %}
-              <a href="{% url 'company_vacancy_create' %}" class="btn btn-info mt-4">Добавить</a>
+              <a href="{% url 'company_vacancy_create' %}" class="btn btn-outline-primary btn-block mt-2">Добавить</a>
             </section>
           {% include 'job_app/pagination.html' %}
           </div>

@@ -1,0 +1,22 @@
+{% extends 'job_app/base.html' %}
+{% block container %}
+    <main class="container mt-3 pb-5">
+    <section class="col-12 col-lg-6 offset-lg-3 mt-5 card">
+      <div class="card-body px-3 pb-4">
+          <form method="post"> {% csrf_token %}
+              {% if 'myresume' in request.path %}
+                <h1 class="h4 pt-2">Мое резюме</h1>
+                <p class="mt-2">Вы действительно хотите удалить ваше резюме?</p>
+              {% elif 'vacancies' in request.path %}
+                <h1 class="h4 pt-2">Мои вакансии</h1>
+                <p class="mt-2">Вы действительно хотите удалить вакансию {{ vacancy.title }}?</p>
+              {% else %}
+                <h1 class="h4 pt-2">Моя компания</h1>
+                <p class="mt-2">Вы действительно хотите удалить компанию {{ company.name }}?</p>
+              {% endif %}
+              <input type="submit" class="btn btn-danger btn-block mb-2" value="Удалить">
+          </form>
+      </div>
+    </section>
+    </main>
+{% endblock %}

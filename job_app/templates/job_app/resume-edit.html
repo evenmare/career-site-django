@@ -15,6 +15,9 @@
               {% endfor %}
           {% endif %}
           {% crispy form form.helper %}
+          {% if 'create' not in request.path %}
+            <a href="{% url 'resume_delete' %}" class="btn btn-outline-danger btn-block my-2">Удалить</a>
+          {% endif %}
       </div>
     </section>
   </main>

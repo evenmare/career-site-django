@@ -1,7 +1,7 @@
 from django import forms
 from .models import Company, Vacancy, Specialty, Application, Resume
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit
+from crispy_forms.layout import Layout, Row, Column, Submit, Button
 
 
 class ResumeForm(forms.ModelForm):
@@ -24,7 +24,7 @@ class ResumeForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(ResumeForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper
+        self.helper = FormHelper()
         self.helper.form_method = 'post'
         self.helper.layout = Layout(
             Row(
@@ -42,7 +42,7 @@ class ResumeForm(forms.ModelForm):
             'education',
             'experience',
             'portfolio',
-            Submit('submit', 'Отправить')
+            Submit('submit', 'Отправить', css_class='btn btn-primary btn-block'),
         )
 
 
@@ -90,16 +90,6 @@ class CompanyVacancyForm(forms.ModelForm):
                     'class': 'custom-select mr-sm-2',
                 }
             ),
-            'skills': forms.Textarea(
-                attrs={
-                    'rows': '3',
-                }
-            ),
-            'text': forms.Textarea(
-                attrs={
-                    'rows': '13',
-                }
-            ),
         }
         labels = {
             'title': 'Название вакансии',
@@ -112,20 +102,20 @@ class CompanyVacancyForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(CompanyVacancyForm, self).__init__(*args, **kwargs)
-        self.helper = FormHelper
+        self.helper = FormHelper()
         self.helper.method = 'post'
         self.helper.layout = Layout(
             Row(
-                Column('title', css_class='form-group pb-2'),
-                Column('specialty', css_class='form-group pb-2'),
+                Column('title'),
+                Column('specialty'),
             ),
             Row(
-                Column('salary_min', css_class='form-group pb-2'),
-                Column('salary_max', css_class='form-group pb-2'),
+                Column('salary_min'),
+                Column('salary_max'),
             ),
             'skills',
             'text',
-            Submit('submit', 'Сохранить', css_class='btn btn-info')
+            Submit('submit', 'Сохранить', css_class='btn btn-primary btn-block')
         )
 
 

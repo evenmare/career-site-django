@@ -1,8 +1,8 @@
 from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponseNotFound, HttpResponseServerError, Http404
+from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView, View
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, render, redirect
 from job_app.models import Company, Specialty, Vacancy, Application, Resume
@@ -18,13 +18,61 @@ def error500_view(request: HttpRequest, exception=None):
     return HttpResponseServerError("""<h1>Error 500</h1><a href="/">На главную</a><p>That's a crap</p>""")
 
 
+class CompanyVacancyDeleteView(DeleteView):
+    model = Vacancy
+    template_name = 'job_app/model-delete.html'
+    success_url = '/mycompany/vacancies'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Vacancy.objects.filter(company=Company.objects.filter(owner=self.request.user))
+        except (Company.DoesNotExist, Vacancy.DoesNotExist):
+            raise Http404
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class CompanyDeleteView(DeleteView):
+    model = Company
+    template_name = 'job_app/model-delete.html'
+    success_url = '/mycompany/letsstart'
+
+    def get_object(self, queryset=None):
+        return Company.objects.get(owner=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.get_object()
+        except Company.DoesNotExist:
+            return redirect('/mycompany/letsstart')
+
+        return super().dispatch(request, *args, **kwargs)
+
+
+class ResumeDeleteView(DeleteView):
+    model = Resume
+    template_name = 'job_app/model-delete.html'
+    success_url = '/myresume/letsstart'
+
+    def get_object(self, queryset=None):
+        return Resume.objects.get(user=self.request.user)
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Resume.objects.get(user=self.request.user)
+        except Resume.DoesNotExist:
+            return redirect('/myresume/letsstart')
+
+        return super().dispatch(request, *args, **kwargs)
+
+
 class ResumeLetsStartView(TemplateView):
     template_name = 'job_app/resume-create.html'
 
     def dispatch(self, request, *args, **kwargs):
         try:
             Resume.objects.get(user=self.request.user)
-            return redirect('/myresume/')
+            return redirect('/myresume')
         except Resume.DoesNotExist:
             pass
 
@@ -137,7 +185,6 @@ class CompanyVacancyCreateView(SuccessMessageMixin, CreateView):
     success_message = 'Вакансия создана'
     model = Vacancy
     form_class = CompanyVacancyForm
-    success_url = '/'
     template_name = 'job_app/vacancy-edit.html'
 
     def form_valid(self, form):
@@ -149,6 +196,13 @@ class CompanyVacancyCreateView(SuccessMessageMixin, CreateView):
         else:
             company_vacancy.save()
             return super().form_valid(form)
+
+    def get_success_url(self):
+        output_vacancy = (Vacancy.objects
+            .filter(company=Company.objects.get(owner=self.request.user))
+            .order_by('-published_at').first())
+
+        return f'/mycompany/vacancies/{output_vacancy.id}'
 
 
 class CompanyVacanciesView(ListView):
@@ -162,6 +216,14 @@ class CompanyVacanciesView(ListView):
                              .order_by('-published_at'))
 
         return company_vacancies
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            Company.objects.get(owner=self.request.user)
+        except Company.DoesNotExist:
+            return redirect('/mycompany/letsstart')
+
+        return super().dispatch(request, *args, **kwargs)
 
 
 class CompanyCreateView(SuccessMessageMixin, CreateView):
