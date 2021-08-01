@@ -15,6 +15,7 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure--p*e7+*vd3q$qb&kc_eb6u8-qm+!c105-n^nqe27xjn%%0y$4&'
+STATIC_URL = '/static/'
 
 DEBUG = False
 
