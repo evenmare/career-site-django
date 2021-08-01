@@ -20,7 +20,7 @@ class RegisterForm(UserCreationForm):
 
     class Meta:
         model = get_user_model()
-        fields = ('username', 'first_name', 'last_name', )
+        fields = ('username', 'first_name', 'last_name')
         widgets = {
             'username': forms.TextInput(attrs={'autofocus': True}),
         }
@@ -34,7 +34,6 @@ class RegisterForm(UserCreationForm):
             'username': None,
         }
 
-
     def __init__(self, *args, **kwargs):
         super(RegisterForm, self).__init__(*args, **kwargs)
 
@@ -46,17 +45,16 @@ class RegisterForm(UserCreationForm):
             'last_name',
             'password1',
             'password2',
-            Submit('submit', 'Зарегистрироваться', css_class="btn btn-primary btn-lg btn-block")
+            Submit('submit', 'Зарегистрироваться', css_class="btn btn-primary btn-lg btn-block"),
         )
 
 
 class LoginForm(AuthenticationForm):
-        username = UsernameField(
-            label='Логин',
-            widget=forms.TextInput(attrs={'class': 'form-control', 'autofocus': True, 'required': True})
-        )
-        password = forms.CharField(
-            label='Пароль',
-            widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True})
-        )
-
+    username = UsernameField(
+        label='Логин',
+        widget=forms.TextInput(attrs={'class': 'form-control', 'autofocus': True, 'required': True}),
+    )
+    password = forms.CharField(
+        label='Пароль',
+        widget=forms.PasswordInput(attrs={'class': 'form-control', 'required': True}),
+    )

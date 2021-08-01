@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.views.generic import CreateView
 from authentifiaction_app.forms import RegisterForm, LoginForm

@@ -73,7 +73,7 @@ class Resume(models.Model):
     grade = models.CharField(max_length=32, choices=GradeChoices.choices)
     education = models.TextField()
     experience = models.TextField()
-    portfolio = models.URLField(blank=True, null=True)
+    portfolio = models.URLField(blank=True)
 
     def __str__(self):
         return f'{self.user} {self.status} {self.specialty}'

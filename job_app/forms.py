@@ -1,7 +1,7 @@
 from django import forms
 from .models import Company, Vacancy, Specialty, Application, Resume
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Row, Column, Submit, Button
+from crispy_forms.layout import Layout, Row, Column, Submit
 
 
 class ResumeForm(forms.ModelForm):
@@ -20,6 +20,10 @@ class ResumeForm(forms.ModelForm):
             'education': 'Образование',
             'experience': 'Опыт работы',
             'portfolio': 'Ссылка на портфолио',
+        }
+
+        widgets = {
+            'portfolio': forms.URLInput(attrs={'placeholder': 'https://'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -82,13 +86,13 @@ class CompanyVacancyForm(forms.ModelForm):
     class Meta:
         model = Vacancy
         fields = ('title', 'specialty', 'skills',
-                  'salary_min', 'salary_max', 'text',)
+                  'salary_min', 'salary_max', 'text')
         widgets = {
             'specialty': forms.Select(
                 choices=(specialty for specialty in Specialty.objects.all()),
                 attrs={
                     'class': 'custom-select mr-sm-2',
-                }
+                },
             ),
         }
         labels = {
@@ -115,7 +119,7 @@ class CompanyVacancyForm(forms.ModelForm):
             ),
             'skills',
             'text',
-            Submit('submit', 'Сохранить', css_class='btn btn-primary btn-block')
+            Submit('submit', 'Сохранить', css_class='btn btn-primary btn-block'),
         )
 
 
@@ -130,7 +134,7 @@ class CompanyInfoForm(forms.ModelForm):
                 attrs={
                     'class': 'form-control',
                     'rows': '4',
-                }
+                },
             ),
         }
 

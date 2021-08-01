@@ -8,4 +8,5 @@ def default_data(request):
         'back': data.back,
         'next': data.next_step,
         'home': data.home,
+        'skills': data.skills,
     }

@@ -1,6 +1,4 @@
 # Register your models here.
-from django.contrib.auth.models import User
-from django.contrib.admin import AdminSite
 from django.contrib import admin
 from .models import Company, Specialty, Vacancy, Application, Resume
 
